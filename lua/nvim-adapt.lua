@@ -45,9 +45,9 @@ M.ctx = loop.new_work(function(v)
 
 		local clock = os.clock
 
-		local function sleep(n)
-			local t0 = clock()
-			while clock() - t0 <= n do end
+		local function sleep(s)
+			local ntime = os.time() + s
+			repeat until os.time() > ntime
 		end
 
 		-- I don't know why, but this assertion causes restarting the work thread to error saying
