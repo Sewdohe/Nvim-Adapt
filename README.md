@@ -10,3 +10,8 @@ A plugin to adapt your vim background color to your systems preferred light/dark
 2. Run ```:PackerSync```
 3. Place ```require("nvim-adapt")``` somewhere in your config
 4. Reload Neovim
+
+## Future Plans
+
+1.[ ] Fix performance issues (using around 6% of my i7 with this plugin on idle)
+2.[ ] Expose callback function to the user to configure what to do on theme change
