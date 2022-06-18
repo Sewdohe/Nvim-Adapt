@@ -13,5 +13,5 @@ A plugin to adapt your vim background color to your systems preferred light/dark
 
 ## Future Plans
 
-1.[ ] Fix performance issues (using around 6% of my i7 with this plugin on idle)
-2.[ ] Expose callback function to the user to configure what to do on theme change
+- [ ] Fix performance issues (using around 6% of my i7 with this plugin on idle)
+- [ ] Expose callback function to the user to configure what to do on theme change
