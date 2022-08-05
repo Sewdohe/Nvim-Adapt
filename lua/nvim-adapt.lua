@@ -38,7 +38,6 @@ M.init = function()
 	elseif theme_value == 1 then
 		vim.o.background = "dark"
 	end
-	os.exit()
 end
 
 function query ( )
