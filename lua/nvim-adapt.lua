@@ -32,11 +32,13 @@ M.init = function()
 	local sub_sub_iter = ldbus.message.iter.new ( )
 	assert(subiter:recurse(sub_sub_iter), "sub-iter not recursable")
 	local theme_value = sub_sub_iter:get_basic()
+
 	if theme_value == 0 then
 		vim.o.background = "light"
 	elseif theme_value == 1 then
 		vim.o.background = "dark"
 	end
+	os.exit()
 end
 
 function query ( )
@@ -139,13 +141,11 @@ end
 M.init()
 -- M.start_listen()
 
-vim.api.nvim_create_autocmd("VimLeavePre", {
-	callback = function()
-		Working = false
-		print("closing")
-		-- vim.loop.close(Process_pid)
-		os.exit()
-	end
-})
-
-return M
+-- vim.api.nvim_create_autocmd("VimLeavePre", {
+-- 	callback = function()
+-- 		Working = false
+-- 		print("closing")
+-- 		-- vim.loop.close(Process_pid)
+-- 		os.exit()
+-- 	end
+-- })
