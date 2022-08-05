@@ -39,6 +39,36 @@ M.init = function()
 	end
 end
 
+function query ( )
+	local ldbus = require "ldbus"
+  	local param = "color-scheme"
+	print ( "Calling remote method with " .. param )
+	
+	local conn = assert ( ldbus.bus.get ( "session" ) )
+	assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
+	
+	local msg = assert ( ldbus.message.new_method_call (
+		"org.freedesktop.portal.Desktop",
+		"/org/freedesktop/portal/desktop",
+		"org.freedesktop.portal.Settings" ,
+		"Read" ) , "Message Null" )
+	local iter = ldbus.message.iter.new ( )
+	msg:iter_init_append ( iter )
+	
+	iter:append_basic("org.freedesktop.appearance")
+	iter:append_basic("color-scheme")
+	
+	local reply = assert ( conn:send_with_reply_and_block ( msg ) )
+
+	assert ( reply:iter_init ( iter ) , "Message has no arguments" )
+	assert ( iter:get_arg_type ( ) == ldbus.types.boolean , "Argument not boolean!" )
+	local stat = iter:get_basic ( )
+	assert ( iter:next ( ) )
+	assert ( iter:get_arg_type ( ) == ldbus.types.uint32 , "Argument not int!" )
+	local level = iter:get_basic ( )
+	print( "Got reply: " .. tostring ( stat ) .. ", " .. level )
+end
+
 M.ctx = loop.new_work(function(v)
 		local ldbus = require "ldbus"
 		local conn = assert ( ldbus.bus.get ( "session" ) )
@@ -107,7 +137,7 @@ M.start_listen = function()
 end
 
 M.init()
-M.start_listen()
+-- M.start_listen()
 
 vim.api.nvim_create_autocmd("VimLeavePre", {
 	callback = function()
