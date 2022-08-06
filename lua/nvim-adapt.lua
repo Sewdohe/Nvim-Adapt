@@ -4,7 +4,11 @@ Working = true
 Process_pid = 0
 
 M.init = function()
-  -- Create a message for the method call we want to make.
+	GetDesktopValue()
+end
+
+GetDesktopValue = function()
+	-- Create a message for the method call we want to make.
 	local ldbus = require "ldbus"
 	local conn = assert ( ldbus.bus.get ( "session" ) )
 	assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
@@ -40,81 +44,52 @@ M.init = function()
 	end
 end
 
-function query ( )
-	local ldbus = require "ldbus"
-  	local param = "color-scheme"
-	print ( "Calling remote method with " .. param )
-	
-	local conn = assert ( ldbus.bus.get ( "session" ) )
-	assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
-	
-	local msg = assert ( ldbus.message.new_method_call (
-		"org.freedesktop.portal.Desktop",
-		"/org/freedesktop/portal/desktop",
-		"org.freedesktop.portal.Settings" ,
-		"Read" ) , "Message Null" )
-	local iter = ldbus.message.iter.new ( )
-	msg:iter_init_append ( iter )
-	
-	iter:append_basic("org.freedesktop.appearance")
-	iter:append_basic("color-scheme")
-	
-	local reply = assert ( conn:send_with_reply_and_block ( msg ) )
-
-	assert ( reply:iter_init ( iter ) , "Message has no arguments" )
-	assert ( iter:get_arg_type ( ) == ldbus.types.boolean , "Argument not boolean!" )
-	local stat = iter:get_basic ( )
-	assert ( iter:next ( ) )
-	assert ( iter:get_arg_type ( ) == ldbus.types.uint32 , "Argument not int!" )
-	local level = iter:get_basic ( )
-	print( "Got reply: " .. tostring ( stat ) .. ", " .. level )
-end
-
 M.ctx = loop.new_work(function(v)
-		local ldbus = require "ldbus"
-		local conn = assert ( ldbus.bus.get ( "session" ) )
+	GetDesktopValue()
+	-- local ldbus = require "ldbus"
+	-- local conn = assert ( ldbus.bus.get ( "session" ) )
 
-		local clock = os.clock
+	-- local clock = os.clock
 
-		local function sleep(s)
-			local ntime = os.time() + s
-			repeat until os.time() > ntime
-		end
+	-- local function sleep(s)
+	-- 	local ntime = os.time() + s
+	-- 	repeat until os.time() > ntime
+	-- end
 
-		-- I don't know why, but this assertion causes restarting the work thread to error saying
-		-- it isn't the primary owner...not sure of the damages of disabling it as I don't understand it.
-		assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
-		assert ( ldbus.bus.add_match ( conn , "type='signal',interface='org.freedesktop.portal.Settings'" ) )
+	-- -- I don't know why, but this assertion causes restarting the work thread to error saying
+	-- -- it isn't the primary owner...not sure of the damages of disabling it as I don't understand it.
+	-- assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
+	-- assert ( ldbus.bus.add_match ( conn , "type='signal',interface='org.freedesktop.portal.Settings'" ) )
 
-		conn:flush ( )
+	-- conn:flush ( )
 
-		while conn:read_write ( 0 ) do
-			local msg = conn:pop_message ( )
-			if not msg then
-				sleep(0.2)
-			elseif msg:get_type ( ) == "signal" then
-				local iter = ldbus.message.iter.new ( )
-				assert ( msg:iter_init ( iter ) , "Message has no parameters" )
-				assert ( iter:get_arg_type ( ) == ldbus.types.string , "Argument is not a string" )
+	-- while conn:read_write ( 0 ) do
+	-- 	local msg = conn:pop_message ( )
+	-- 	if not msg then
+	-- 		sleep(0.2)
+	-- 	elseif msg:get_type ( ) == "signal" then
+	-- 		local iter = ldbus.message.iter.new ( )
+	-- 		assert ( msg:iter_init ( iter ) , "Message has no parameters" )
+	-- 		assert ( iter:get_arg_type ( ) == ldbus.types.string , "Argument is not a string" )
 
-				local val = iter:get_basic()
-				if iter:next() then
-					local secondVal = iter:get_basic()
-				end
-				if iter:next() then
-					local subiter = ldbus.message.iter.new ( )
-					iter:recurse(subiter)
-					local theme_value = subiter:get_basic()
-					if(theme_value == 0) then
-						print("Light Mode Selected.")
-						return 0
-					elseif(theme_value == 1) then
-						print("Dark Mode Selected")
-						return 1
-					end
-				end
-			end
-		end
+	-- 		local val = iter:get_basic()
+	-- 		if iter:next() then
+	-- 			local secondVal = iter:get_basic()
+	-- 		end
+	-- 		if iter:next() then
+	-- 			local subiter = ldbus.message.iter.new ( )
+	-- 			iter:recurse(subiter)
+	-- 			local theme_value = subiter:get_basic()
+	-- 			if(theme_value == 0) then
+	-- 				print("Light Mode Selected.")
+	-- 				return 0
+	-- 			elseif(theme_value == 1) then
+	-- 				print("Dark Mode Selected")
+	-- 				return 1
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
 end, 	-- Using vim.schedule_wrap as per the docs:
 			-- https://neovim.io/doc/user/lua.html
 vim.schedule_wrap(function(v)
@@ -138,7 +113,7 @@ M.start_listen = function()
 end
 
 M.init()
--- M.start_listen()
+M.start_listen()
 
 -- vim.api.nvim_create_autocmd("VimLeavePre", {
 -- 	callback = function()
