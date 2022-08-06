@@ -82,11 +82,10 @@ M.ctx = loop.new_work(function(v)
 	local theme_value = sub_sub_iter:get_basic()
 
 	if theme_value == 0 then
-		-- vim.o.background = "light"
-		print('light')
+		return 1
 	elseif theme_value == 1 then
-		-- vim.o.background = "dark"
 		print('dark')
+		return 0
 	end
 	
 	-- local ldbus = require "ldbus"
