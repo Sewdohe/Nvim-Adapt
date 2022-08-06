@@ -13,6 +13,13 @@ GetDesktopValue = function()
 	local conn = assert ( ldbus.bus.get ( "session" ) )
 	assert ( ldbus.bus.request_name ( conn , "org.freedesktop.portal.Settings" , { replace_existing = true } ) )
 
+	local clock = os.clock
+
+	local function sleep(s)
+		local ntime = os.time() + s
+		repeat until os.time() > ntime
+	end
+
 	local msg = assert ( ldbus.message.new_method_call (
 		"org.freedesktop.portal.Desktop",
 		"/org/freedesktop/portal/desktop",
@@ -75,16 +82,11 @@ M.ctx = loop.new_work(function(v)
 	local theme_value = sub_sub_iter:get_basic()
 
 	if theme_value == 0 then
-		vim.o.background = "light"
+		-- vim.o.background = "light"
+		print('light')
 	elseif theme_value == 1 then
-		vim.o.background = "dark"
-	end
-
-	local clock = os.clock
-
-	local function sleep(s)
-		local ntime = os.time() + s
-		repeat until os.time() > ntime
+		-- vim.o.background = "dark"
+		print('dark')
 	end
 	
 	-- local ldbus = require "ldbus"
