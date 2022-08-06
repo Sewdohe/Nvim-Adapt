@@ -82,10 +82,9 @@ M.ctx = loop.new_work(function(v)
 	local theme_value = sub_sub_iter:get_basic()
 
 	if theme_value == 0 then
-		return 1
-	elseif theme_value == 1 then
-		print('dark')
 		return 0
+	elseif theme_value == 1 then
+		return 1
 	end
 	
 	-- local ldbus = require "ldbus"
