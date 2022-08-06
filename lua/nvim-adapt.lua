@@ -48,10 +48,12 @@ GetDesktopValue = function()
 		vim.o.background = "light"
 	elseif theme_value == 1 then
 		vim.o.background = "dark"
-	end
+  else
+    sleep(1)
+  end
 end
 
-M.ctx = loop.new_work(function(v)
+M.ctx = loop.new_thread(function(v)
 	-- Create a message for the method call we want to make.
 	local ldbus = require "ldbus"
 	local conn = assert ( ldbus.bus.get ( "session" ) )
@@ -154,7 +156,7 @@ M.start_listen = function()
 end
 
 M.init()
-M.start_listen()
+-- M.start_listen()
 
 -- vim.api.nvim_create_autocmd("VimLeavePre", {
 -- 	callback = function()
